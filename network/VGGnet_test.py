@@ -1,5 +1,5 @@
 import tensorflow as tf
-from networks.network_op import Network
+from network.network_op import Network
 
 n_classes=21
 _feat_stride=[16,]
