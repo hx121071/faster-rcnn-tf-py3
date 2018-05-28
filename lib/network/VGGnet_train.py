@@ -7,12 +7,12 @@ Created on Wed Dec 20 23:18:03 2017
 """
 
 import tensorflow as tf
-from networks.network_op import Network
+from network.network_op import Network
 
 
 #define
 
-n_classes = 21
+n_classes = 2
 _feat_stride = [16,]
 anchor_scales = [8, 16, 32]
 
@@ -64,27 +64,27 @@ class VGGnet_train(Network):
 
         (self.feed('rpn_cls_score','gt_boxes','im_info','data')
              .anchor_target_layer(_feat_stride, anchor_scales, name = 'rpn-data' ))
-        
+
         #Loss of rpn_cls and rpn_boxes
-        
+
         (self.feed('rpn_conv/3x3')
              .conv(1,1,len(anchor_scales)*3*4,1,1,padding='VALID',relu=False,name='rpn_bbox_pred'))
-        
+
         #.........ROI Proposal........#
-        
+
         (self.feed('rpn_cls_score')
              .reshape_layer(2,name='rpn_cls_score_reshape')
              .softmax(name='rpn_cls_prob'))
-        
+
         (self.feed('rpn_cls_prob')
              .reshape_layer(len(anchor_scales)*3*2,name='rpn_cls_prob_reshape'))
-        
+
         (self.feed('rpn_cls_prob_reshape','rpn_bbox_pred','im_info')
              .proposal_layer(_feat_stride,anchor_scales,'TRAIN',name='rpn_rois'))
-        
+
         (self.feed('rpn_rois','gt_boxes')
              .proposal_target_layer(n_classes,name='roi-data'))
-        
+
         #.............RCNN...........#
         (self.feed('conv5_3','roi-data')
              .roi_pool(7,7,1.0/16,name='pool_5')
@@ -93,10 +93,7 @@ class VGGnet_train(Network):
              .fc(4096,name='fc7')
              .dropout(0.5,name='drop7')
              .fc(n_classes,relu=False,name='cls_score')
-             .softmax('cls_prob'))
-        
+             .softmax(name='cls_prob'))
+
         (self.feed('drop7')
              .fc(n_classes*4,relu=False,name='bbox_pred'))
-        
-        
-        
