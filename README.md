@@ -1,5 +1,4 @@
 # faster-rcnn-tf-py3
-<<<<<<< HEAD
 if you need faster-rcnn-tf-py3, you can visit https://github.com/smallcorgi/Faster-RCNN_TF for help. I wrote this according to  smallcorgi.
 
 I think my repo has the following cons:
